@@ -27,7 +27,7 @@ P = [
 [V, D, W] = eig(P);
 
 % Get the eigenvalues in order of increasing magnitude:
-[d, ind] = sort(diag(D));
+[d, ind] = sort(diag(abs(D)));
 
 % Now ind(end) is the index of the largest eigenvalue,
 % which by the Perron-Frobenius theorem is 1 for a
