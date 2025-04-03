@@ -34,32 +34,6 @@ M = N - 1;
 w_unscaled = W(:,ind(end))';
 w = w_unscaled / sum(w_unscaled);
 
-% Vector of first return times
-tau_d = 1.0 ./ w;
-
-%% Finding all expected first passage times
-
-% Matrix of copies of rows like w
-A = ones([N,1]) * w;
-
-% Fundamental matrix
-Z = inv(eye(N) - P + A);
-
-% Zero out the non-diagonal elements of Z.
-% diag(square matrix) = its diagonal as a vector
-% diag(vector) = square matrix of 0s but with the vector entries
-% going down the diagonal
-% Which leads to this bizarre formula:
-Zd = diag(diag(Z));
-
-% Matrix of first passage times
-tau = (eye(N) - Z + ones([N,N]) * Zd) * diag(tau_d);
-
-% This should be equal to tau
-tau_check = ones([N,N]) + P * (tau - diag(tau_d));
-
-% And tau should have tau_d on the diagonal.
-
 %% Expected cost
 
 % Demand each week has a Poisson distribution
@@ -109,3 +83,29 @@ cLongTerm = 0;
 for x = 0:M
     cLongTerm = cLongTerm + w(1+x)*ExCost(M, x);
 end
+
+%% Finding all expected first passage times
+
+% Vector of first return times
+tau_d = 1.0 ./ w;
+
+% Matrix of copies of rows like w
+A = ones([N,1]) * w;
+
+% Fundamental matrix
+Z = inv(eye(N) - P + A);
+
+% Zero out the non-diagonal elements of Z.
+% diag(square matrix) = its diagonal as a vector
+% diag(vector) = square matrix of 0s but with the vector entries
+% going down the diagonal
+% Which leads to this bizarre formula:
+Zd = diag(diag(Z));
+
+% Matrix of first passage times
+tau = (eye(N) - Z + ones([N,N]) * Zd) * diag(tau_d);
+
+% This should be equal to tau
+tau_check = ones([N,N]) + P * (tau - diag(tau_d));
+
+% And tau should have tau_d on the diagonal.
