@@ -18,6 +18,9 @@ P = [
     0.0 0.1 0.8 0.1
     0.9 0.0 0.0 0.1
 ];
+N = 4;
+
+%% Stationary distribution
 
 % Since this MC is regular, it has a unique stationary
 % distribution, which is a left-eigenvector for eigenvalue 1.
@@ -40,3 +43,29 @@ w_unscaled = W(:,ind(end))';
 
 % Scale it to a distribution vector
 w = w_unscaled / sum(w_unscaled);
+
+%% Finding all expected first passage times
+
+% Vector of first return times
+tau_d = 1.0 ./ w;
+
+% Matrix of copies of rows like w
+A = ones([N,1]) * w;
+
+% Fundamental matrix
+Z = inv(eye(N) - P + A);
+
+% Zero out the non-diagonal elements of Z.
+% diag(square matrix) = its diagonal as a vector
+% diag(vector) = square matrix of 0s but with the vector entries
+% going down the diagonal
+% Which leads to this bizarre formula:
+Zd = diag(diag(Z));
+
+% Matrix of first passage times
+tau = (eye(N) - Z + ones([N,N]) * Zd) * diag(tau_d);
+
+% This should be equal to tau
+tau_check = ones([N,N]) + P * (tau - diag(tau_d));
+
+% And tau should have tau_d on the diagonal.
