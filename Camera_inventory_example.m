@@ -55,7 +55,7 @@ function c = Cost(M, x, dNext)
         % At the end of the week we have x in stock.
         % We don't place an order.
         % The cost for the following week is just shortage.
-        c = 50*max([dNext-x, 0])
+        c = 50*max([dNext-x, 0]);
     end
 end
 
