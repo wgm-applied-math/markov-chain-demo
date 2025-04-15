@@ -6,6 +6,8 @@
 % 3 - damaged
 % 4 - unusable
 
+StateNames = ["like new", "broken in", "damaged", "unusable"];
+
 % General wear and tear causes transitions 1 -> 2 -> 3 -> 4.
 % A damaged machine (3) is sometimes selected for repair, 
 % which returns it to (2) broken in.
@@ -69,3 +71,53 @@ tau = (eye(N) - Z + ones([N,N]) * Zd) * diag(tau_d);
 tau_check = ones([N,N]) + P * (tau - diag(tau_d));
 
 % And tau should have tau_d on the diagonal.
+
+%% Sample trajectory
+
+StartState = 1;
+NumSteps = 50;
+
+Trajectory = MCTrajectory(P, StartState, NumSteps);
+
+% Line plot
+
+fig = figure();
+t = tiledlayout(1,1);
+ax = nexttile(t);
+
+p = plot(ax, Trajectory, "x-");
+
+% Make sure there's room for all states vertically
+ylim(ax, [0.5, N+0.5]);
+
+% Histogram of states
+
+fig = figure();
+t = tiledlayout(1,1);
+ax = nexttile(t);
+
+h = histogram(ax, Trajectory, BinEdges=0.5:(N+0.5));
+
+% Pie chart
+
+fig = figure();
+
+% The histogram function produces bin counts
+counts = h.BinCounts;
+
+% Has to be a fig, not axes. Shrug.
+piechart(fig, counts, StateNames);
+
+
+%% Picture of the network of states
+
+% Construct a directed graph. This function call interprets P as a weighted
+% adjacency matrix, which is perfect for a Markov chain. We can also name
+% the states with a vector of strings.
+G = digraph(P, StateNames);
+
+fig = figure();
+t = tiledlayout(1,1);
+ax = nexttile(t);
+
+plot(ax, G, EdgeLabel=G.Edges.Weight, MarkerSize=10);
