@@ -23,6 +23,13 @@ PRegular = [
        0        0       pD  1-pD
     ];
 
+%% Finding the stationary distribution as an eigenvector
+
+[V, D, W] = eig(PRegular);
+[d, ind] = sort(diag(abs(D)));
+w_unscaled = W(:,ind(end))';
+w = w_unscaled / sum(w_unscaled);
+
 %% Expected time to full
 
 % To calculate the expected time until
